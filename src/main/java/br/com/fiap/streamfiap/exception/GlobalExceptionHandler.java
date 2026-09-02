@@ -1,6 +1,7 @@
 package br.com.fiap.streamfiap.exception;
 
 import org.springframework.http.HttpStatus;
+import br.com.fiap.streamfiap.exception.ClassificacaoIndicativaException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,5 +24,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConteudoIndisponivelException.class)
     public ResponseEntity<Map<String, String>> handleConteudoIndisponivel(ConteudoIndisponivelException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("erro", e.getMessage()));
+    }
+    
+    @ExceptionHandler(ClassificacaoIndicativaException.class)
+    public ResponseEntity<Map<String, String>> handleClassificacaoIndicativa(ClassificacaoIndicativaException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("erro", e.getMessage()));
     }
 }
