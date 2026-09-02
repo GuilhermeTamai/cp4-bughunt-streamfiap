@@ -26,17 +26,12 @@ public class ConteudoController {
         return conteudoRepository.findAll();
     }
 
-    // GET /api/conteudos/{id} - Buscar por ID
+ // GET /api/conteudos/{id} - Buscar por ID
     @GetMapping("/{id}")
-    public Conteudo buscarPorId(@PathVariable Long id) {
-        try {
-            Conteudo conteudo = conteudoRepository.findById(id)
-                    .orElseThrow(() -> new ConteudoNaoEncontradoException("Conteúdo não encontrado: " + id));
-            return ResponseEntity.ok(conteudo).getBody();
-        } catch (Exception e) {
-            // TODO: tratar isso depois
-        }
-        return null;
+    public ResponseEntity<Conteudo> buscarPorId(@PathVariable Long id) {
+        Conteudo conteudo = conteudoRepository.findById(id)
+                .orElseThrow(() -> new ConteudoNaoEncontradoException("Conteúdo não encontrado: " + id));
+        return ResponseEntity.ok(conteudo);
     }
 
     // GET /api/conteudos/categoria/{categoria} - Buscar por categoria
