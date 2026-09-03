@@ -122,8 +122,22 @@
 
 ---
 
-## 💬 Reflexões Finais
+## 💬 Reflexões Finais (6 Perguntas)
 
-1. **Impacto do Clean Code:** Manter o código limpo reduz o custo de manutenção e evita efeitos colaterais ao adicionar novas regras.
-2. **Importância dos Testes:** Testes manuais e automatizados ajudam a garantir que o contrato da API seja cumprido sem quebras involuntárias.
-3. **Tratamento Centralizado de Erros:** Unificar o tratamento de exceções desacopla a camada de controlador e melhora a experiência dos clientes da API.
+**1. Qual o impacto prático do Clean Code na manutenção de um código legado?**
+A aplicação de Clean Code (como remover códigos mortos, comentários mentirosos e evitar quebra de encapsulamento) reduz drasticamente a carga cognitiva necessária para entender o projeto. Isso evita que novos desenvolvedores introduzam bugs ao tentar alterar regras de negócio complexas.
+
+**2. Qual a principal vantagem de utilizar o `@RestControllerAdvice` no Spring Boot?**
+Ele permite centralizar o tratamento de exceções de toda a aplicação em um único lugar. Isso evita a repetição de blocos `try-catch` em todas as rotas do Controller e garante que a API sempre responda com um padrão estruturado e códigos HTTP adequados (ex: 404, 400, 403).
+
+**3. Como o polimorfismo ajudou a resolver o problema de precificação na API?**
+Através do polimorfismo e da sobrescrita de métodos (`@Override`), foi possível definir que a classe base `Conteudo` tem um preço padrão, mas que subclasses como `Serie` e `Documentario` podem ter comportamentos de cálculo completamente diferentes (por temporada ou gratuito) sem alterar a estrutura do controlador que as chama.
+
+**4. Por que o encapsulamento (atributos `private`) é inegociável em entidades de domínio?**
+Deixar atributos públicos (como estava o `duracaoMinutos`) permite que qualquer parte do código altere o estado do objeto livremente, burlando validações. O encapsulamento garante que o estado da classe só seja modificado através de métodos controlados (setters ou métodos de negócio), protegendo a integridade dos dados.
+
+**5. Qual a vantagem de delegar as buscas ao `JpaRepository` em vez de filtrar dados manualmente na aplicação?**
+Utilizar os recursos do Spring Data JPA (como o método genérico `findByCategoria`) transfere o processamento da busca para o banco de dados. Isso é muito mais performático e consome menos memória do que trazer todos os registros do banco para a aplicação e iterar sobre eles com um laço `for`.
+
+**6. Por que é essencial testar os cenários de erro (além do "caminho feliz") ao assumir uma API?**
+Testar as mensagens de erro (ex: saldo insuficiente, conteúdo indisponível) garante que o contrato da API esteja sendo respeitado. Muitas vezes o código "compila e sobe", mas as regras de negócio falham silenciosamente. Testar os limites valida se o sistema sabe se defender de dados inesperados e protege o banco de dados de inconsistências.
