@@ -1,5 +1,7 @@
 # Checkpoint 4 — Bug Hunt StreamFIAP
 
+## Identificação
+
 **Grupo:** StreamFIAP
 ## Integrantes do Grupo
 | Nome Completo | RM |
@@ -9,8 +11,6 @@
 | Caio Castelão carminato | RM563630|
 | Vitor Komura de Freitas | RM563694|
 | André Ayello de Nóbrega | RM561754|
-
----
 
 | Campo | Total |
 | :--- | :--- |
