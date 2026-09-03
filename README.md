@@ -1,5 +1,6 @@
 # Checkpoint 4 — Bug Hunt StreamFIAP
 
+**Grupo:** StreamFIAP
 ## Integrantes do Grupo
 | Nome Completo | RM |
 | :--- | :--- |
@@ -9,6 +10,12 @@
 | Vitor Komura de Freitas | RM563694|
 | André Ayello de Nóbrega | RM561754|
 
+---
+
+| Campo | Total |
+| :--- | :--- |
+| **Total de bugs corrigidos** | 12 / 12 |
+| **Total de ajustes de Clean Code** | 6 / 6 |
 
 ---
 
