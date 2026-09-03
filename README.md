@@ -3,7 +3,7 @@
 ## Identificação
 
 **Grupo:** StreamFIAP
-## Integrantes do Grupo
+### Integrantes do Grupo
 | Nome Completo | RM |
 | :--- | :--- |
 | Guilherme Vasques Tamai | RM563276 |
