@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ConteudoRepository extends JpaRepository<Conteudo, Long> {
 
-    List<Conteudo> findByCategoria(String categoria);
+    List<Conteudo> findByCategoriaIgnoreCase(String categoria);
 }
