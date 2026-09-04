@@ -10,6 +10,7 @@ import br.com.fiap.streamfiap.exception.ConteudoIndisponivelException;
 public class Usuario {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nome;
