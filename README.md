@@ -3,14 +3,15 @@
 ## Identificação
 
 **Grupo:** StreamFIAP
+
 ### Integrantes do Grupo
-| Nome Completo | RM |
-| :--- | :--- |
-| Guilherme Vasques Tamai | RM563276 |
-| Mirella Mascarenhas | RM562092 |
-| Caio Castelão carminato | RM563630|
-| Vitor Komura de Freitas | RM563694|
-| André Ayello de Nóbrega | RM561754|
+| Nome Completo | RM | Turma |
+| :--- | :--- | :--- |
+| Guilherme Vasques Tamai | RM563276 | 2CCPG |
+| Mirella Mascarenhas | RM562092 | 2CCPG |
+| Caio Castelão Carminato | RM563630 | 2CCPG |
+| Vitor Komura de Freitas | RM563694 |2CCPG |
+| André Ayello de Nóbrega | RM561754 | 2CCPG |
 
 | Campo | Total |
 | :--- | :--- |
@@ -70,10 +71,10 @@
 * **Conceito Envolvido:** Fluxo de Exceções em APIs REST.
 
 ### Bug 09: Comparação Incorreta de Strings de Categoria
-* **Sintoma:** A busca por categoria retornava sempre lista vazia.
+* **Sintoma:** A busca por categoria retornava lista vazia ou falhava ao ignorar diferenças entre maiúsculas e minúsculas.
 * **Causa Raiz:** Uso do operador `==` para comparar referências de String.
-* **Correção:** Alterado para `.equalsIgnoreCase()`.
-* **Conceito Envolvido:** Comparação de objetos em Java.
+* **Correção:** Substituído pelo método derivado `findByCategoriaIgnoreCase` do Spring Data JPA.
+* **Conceito Envolvido:** Comparação de objetos e Consultas JPA.
 
 ### Bug 10: Permissão de Cadastro com Duração Minutos <= 0
 * **Sintoma:** O sistema permitia cadastrar conteúdos com duração zerada ou negativa.
@@ -87,11 +88,11 @@
 * **Correção:** Criado o método `@ExceptionHandler(ClassificacaoIndicativaException.class)` retornando HTTP 403.
 * **Conceito Envolvido:** Tratamento global com `@RestControllerAdvice`.
 
-### Bug 12: Ausência de Handler para IllegalArgumentException
-* **Sintoma:** Exceções de argumentos inválidos retornavam sem estrutura de erro padrão.
-* **Causa Raiz:** Não havia tratamento para `IllegalArgumentException` no handler global.
-* **Correção:** Adicionado handler com retorno de status HTTP 400.
-* **Conceito Envolvido:** Padronização de mensagens de erro.
+### Bug 12: Ausência de Geração Automática de ID para Usuário
+* **Sintoma:** Falha e erro 500 ao tentar cadastrar novos usuários sem especificar um ID manualmente.
+* **Causa Raiz:** Ausência da anotação de geração automática de chave primária na entidade `Usuario`.
+* **Correção:** Adicionada a anotação `@GeneratedValue(strategy = GenerationType.IDENTITY)` sobre a chave `@Id`.
+* **Conceito Envolvido:** Mapeamento ORM e Persistência JPA.
 
 ---
 
@@ -99,7 +100,7 @@
 
 ### Clean Code 01: Encapsulamento
 * **Sintoma:** Atributo `duracaoMinutos` declarado como `public` na classe `Conteudo`.
-* **Correção:** Modificado para `private`.
+* **Correção:** Modificado para `private` e adaptados os acessos via método getter `getDuracaoMinutos()`.
 * **Princípio:** Encapsulamento de dados.
 
 ### Clean Code 02: Remoção de Código Morto
@@ -109,42 +110,42 @@
 
 ### Clean Code 03: Saídas de Console em Métodos de Negócio
 * **Sintoma:** `System.out.println` utilizados dentro de métodos do modelo para simular recibos.
-* **Correção:** Removidas as chamadas de impressão do console.
+* **Correção:** Removidas as chamadas de impressão do console do método `alugar` da classe `Usuario`.
 * **Princípio:** Separação de Responsabilidades.
 
 ### Clean Code 04: Comentários Incoerentes
 * **Sintoma:** Comentário afirmando que adicionaria créditos posicionado sobre uma operação de subtração.
-* **Correção:** Comentário removido.
+* **Correção:** Comentário removido da regra de débito na entidade `Usuario`.
 * **Princípio:** Clareza e precisão na documentação interna do código.
 
-### Clean Code 05: Persistência Redundante
-* **Sintoma:** Chamadas desnecessárias a `conteudoRepository.save()` e assinaturas com `throws` dispensáveis.
-* **Correção:** Limpeza do método no controller de aluguel.
-* **Princípio:** DRY e simplificação de assinaturas.
+### Clean Code 05: Correção do Contrato de Aluguel e Persistência
+* **Sintoma:** Método de aluguel desrespeitava o contrato REST e não persistia a alteração de disponibilidade no banco de dados.
+* **Correção:** Restaurado o endpoint `@PostMapping` com `@RequestParam`, mantida a assinatura `throws` e reincluída a chamada `conteudoRepository.save(conteudo)`.
+* **Princípio:** Integridade do Contrato API e Persistência Robusta.
 
-### Clean Code 06: Uso de Queries Spring Data JPA
-* **Sintoma:** Iteração manual com laço `for` para filtrar itens por categoria.
-* **Correção:** Uso direto do método `findByCategoria` exposto pelo repository.
-* **Princípio:** Aproveitamento dos recursos da infraestrutura/framework.
+### Clean Code 06: Uso de Queries Derivadas do Spring Data JPA
+* **Sintoma:** Iteração manual com laço `for` em memória para filtrar itens por categoria.
+* **Correção:** Implementada a assinatura `findByCategoriaIgnoreCase` na interface `ConteudoRepository` delegando a busca ao banco de dados.
+* **Princípio:** Aproveitamento dos recursos da infraestrutura e Framework.
 
 ---
 
 ## 💬 Reflexões Finais (6 Perguntas)
 
-**1. Qual o impacto prático do Clean Code na manutenção de um código legado?**
-A aplicação de Clean Code (como remover códigos mortos, comentários mentirosos e evitar quebra de encapsulamento) reduz drasticamente a carga cognitiva necessária para entender o projeto. Isso evita que novos desenvolvedores introduzam bugs ao tentar alterar regras de negócio complexas.
+**1. Como a Injeção de Dependência (`@Autowired`) ajuda na arquitetura e reduz o acoplamento?**
+No `AluguelController`, a anotação `@Autowired` permite que o Spring instancie e gerencie os repositórios (`UsuarioRepository` e `ConteudoRepository`) automaticamente. Isso elimina a necessidade de o controlador criar instâncias manuais com o operador `new`, desacoplando a camada Web da implementação da camada de dados e facilitando testes unitários e futuras manutenções.
 
-**2. Qual a principal vantagem de utilizar o `@RestControllerAdvice` no Spring Boot?**
-Ele permite centralizar o tratamento de exceções de toda a aplicação em um único lugar. Isso evita a repetição de blocos `try-catch` em todas as rotas do Controller e garante que a API sempre responda com um padrão estruturado e códigos HTTP adequados (ex: 404, 400, 403).
+**2. Qual a diferença prática entre usar JDBC puro e Spring Data JPA neste projeto?**
+No JDBC puro, seria necessário escrever SQL manualmente (como `SELECT * FROM conteudos WHERE LOWER(categoria) = LOWER(?)`), gerenciar conexões e iterar sobre o `ResultSet` para criar objetos Java. Com Spring Data JPA, basta declarar o método `findByCategoriaIgnoreCase(String categoria)` na interface `ConteudoRepository`, e o framework gera a consulta SQL otimizada e o mapeamento automático para os objetos do domínio.
 
-**3. Como o polimorfismo ajudou a resolver o problema de precificação na API?**
-Através do polimorfismo e da sobrescrita de métodos (`@Override`), foi possível definir que a classe base `Conteudo` tem um preço padrão, mas que subclasses como `Serie` e `Documentario` podem ter comportamentos de cálculo completamente diferentes (por temporada ou gratuito) sem alterar a estrutura do controlador que as chama.
+**3. Por que a `ClassificacaoIndicativaException` exige `throws` e outras exceções não?**
+A `ClassificacaoIndicativaException` é uma *Checked Exception* (herda diretamente de `Exception`), forçando o compilador a exigir a assinatura `throws ClassificacaoIndicativaException` no método `alugar` de `Usuario` e no `AluguelController`. Ela representa uma regra de negócio que a aplicação deve explicitamente prever. Já exceções como `ConteudoNaoEncontradoException` são *Unchecked* (herdam de `RuntimeException`), dispensando o `throws` e sendo tratadas diretamente pelo `@RestControllerAdvice`.
 
-**4. Por que o encapsulamento (atributos `private`) é inegociável em entidades de domínio?**
-Deixar atributos públicos (como estava o `duracaoMinutos`) permite que qualquer parte do código altere o estado do objeto livremente, burlando validações. O encapsulamento garante que o estado da classe só seja modificado através de métodos controlados (setters ou métodos de negócio), protegendo a integridade dos dados.
+**4. Diferencie Overload (Sobrecarga) de Override (Sobrescrita) usando o bug da classe `Serie`.**
+O bug da `Serie` ocorria porque existia o método `calcularPrecoAluguel(double desconto)` com parâmetro novo, caracterizando uma Sobrecarga (Overload), o que mantinha o método padrão sem parâmetros executando o preço base de R$ 9,90 da superclasse. A solução foi aplicar Sobrescrita (Override), mantendo a mesma assinatura sem parâmetros com a anotação `@Override`, garantindo a execução dinâmica do cálculo específico de R$ 4,90 por temporada.
 
-**5. Qual a vantagem de delegar as buscas ao `JpaRepository` em vez de filtrar dados manualmente na aplicação?**
-Utilizar os recursos do Spring Data JPA (como o método genérico `findByCategoria`) transfere o processamento da busca para o banco de dados. Isso é muito mais performático e consome menos memória do que trazer todos os registros do banco para a aplicação e iterar sobre eles com um laço `for`.
+**5. Por que as regras de negócio devem ficar nos Models (`Usuario`) e não nos Controllers?**
+Regras de negócio como a validação de idade (`idade < c.getClassificacaoEtaria()`) e saldo suficiente pertencem à classe de domínio `Usuario.java` para garantir alta coesão e encapsulamento. Se essa lógica ficasse no `AluguelController`, qualquer outro serviço que tentasse realizar um aluguel precisaria duplicar essas checagens, aumentando o risco de inconsistências no sistema.
 
-**6. Por que é essencial testar os cenários de erro (além do "caminho feliz") ao assumir uma API?**
-Testar as mensagens de erro (ex: saldo insuficiente, conteúdo indisponível) garante que o contrato da API esteja sendo respeitado. Muitas vezes o código "compila e sobe", mas as regras de negócio falham silenciosamente. Testar os limites valida se o sistema sabe se defender de dados inesperados e protege o banco de dados de inconsistências.
+**6. Qual a diferença prática entre a classe abstrata `Conteudo` e a interface `Promocionavel`?**
+A classe abstrata `Conteudo` atua como uma estrutura base de dados e comportamentos comuns (atributos como `titulo`, `duracaoMinutos`, anotações JPA e o método base `calcularPrecoAluguel()`) herdados por `Filme`, `Serie` e `Documentario`. Já a interface `Promocionavel` funciona puramente como um contrato: ela define o método `aplicarPromocao(double preco)` sem guardar estado, sendo implementada apenas por `Filme` e `Serie` para aplicar 20% de desconto sem forçar o `Documentario` a ter uma regra promocional.
