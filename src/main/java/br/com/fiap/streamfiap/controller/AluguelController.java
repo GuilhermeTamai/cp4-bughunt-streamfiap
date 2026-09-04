@@ -20,19 +20,20 @@ public class AluguelController {
     @Autowired
     private ConteudoRepository conteudoRepository;
 
-    // POST /api/alugueis?usuarioId=1&conteudoId=2 - Alugar um conteúdo
-    @PostMapping("/{usuarioId}/alugar/{conteudoId}")
-    public ResponseEntity<Usuario> alugar(@PathVariable Long usuarioId, @PathVariable Long conteudoId) {
+    @PostMapping
+    public ResponseEntity<Usuario> alugar(@RequestParam Long usuarioId, @RequestParam Long conteudoId) 
+            throws ClassificacaoIndicativaException {
+        
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado: " + usuarioId));
 
         Conteudo conteudo = conteudoRepository.findById(conteudoId)
                 .orElseThrow(() -> new ConteudoNaoEncontradoException("Conteúdo não encontrado: " + conteudoId));
 
-        usuario.alugar(conteudo);
+        Usuario usuarioAtualizado = usuario.alugar(conteudo);
 
-        usuarioRepository.save(usuario);
+        conteudoRepository.save(conteudo);
 
-        return ResponseEntity.ok(usuario);
+        return ResponseEntity.ok(usuarioRepository.save(usuarioAtualizado));
     }
 }
